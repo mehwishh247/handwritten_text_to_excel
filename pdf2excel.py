@@ -18,7 +18,7 @@ def select_pdf_file():
     file_path = filedialog.askopenfilename(title="Select PDF File", filetypes=[("PDF Files", "*.pdf")])
     return file_path
 
-def extract_tables(pdf_path, output_folder="temp_images"):
+def extract_tables(pdf_path, output_folder="temp"):
     """Converts a PDF file into images and saves them in a directory."""
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
