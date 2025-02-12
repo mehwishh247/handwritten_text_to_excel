@@ -1,4 +1,4 @@
-API_KEY = "llx-..."
+API_KEY = "llx-p3W98EqNfdCJBe7eCC8jYpueztFTWGpiVmOzUbcgC8oiPqcE"
 
 from llama_cloud_services import LlamaParse
 from llama_index.core import SimpleDirectoryReader
@@ -10,6 +10,7 @@ nest_asyncio.apply()
 
 from sys import argv
 import json
+import pandas as pd
 
 # set up parser
 def set_parser():
@@ -23,22 +24,23 @@ def set_parser():
     parser = LlamaParse(
         api_key=API_KEY,
         premium_mode=True,
-        result_type="structured",  
+        result_type="markdown",  
         content_guideline_instruction=
         """
         These are handwritten files.
         These files contain tables.
-        Tables are also handwritten.
+        Tables are also handwritten. Some fully, some partially.
         Sometimes, the writting would be cursive so you must be extra carefull with those.
         Each file may contain a totally different handwriting so be careful about that too.
         These tables can have different structure from each other.
         Extract only the table from the files.
         If a column does not have a name, name it as a single space ' '. Do not remove the column.
         Do not mixup columns or make extra columns. Read writing and names properly
-        Save each table as a seperate JSON file unless two tables are in exact same format (same column titles and handwriting).
+        Save each table as a seperate JSON looking format unless two tables are in exact same format (same column titles and handwriting).
         Maintain actuall table format
         Save each json in a list
         if a page has two tables with different formats, save them separately.
+        The final result should be a dictionary/json containing tables, each table named as table_1, table_2, ...
         """
     )
 
@@ -62,28 +64,25 @@ def parse_files(parser: LlamaParse, path: str):
     table_list = SimpleDirectoryReader(
     input_dir="./tables", file_extractor=file_extractor).load_data()
 
-    return table_list
+    table_list = table_list[0].text
 
-def generate_sheets():
+    return json.loads(table_list)
+
+
+def pdf2excel():
     '''
-    Generate invoice in JSON format. Takes inputs
-    from positional argument through terminal call
+    Generate an excel file from tables stored in a PDF file
+
+    Each page of PDF file is stored in a separate sheet in the excel file
     '''
 
     parser = set_parser()
-    sheet = parse_files(parser=parser, path='')
+    tables = parse_files(parser=parser, path='')
 
-    print(sheet)
-
-    #invoice_json = json.load(invoice)
-    
-    # with open('invoice.json', 'w') as file:
-    #     file.writelines(invoice)
-
+    with pd.ExcelWriter('data/tables.xlsx', engine="xlsxwriter") as writer:
+        for sheet_name, table in tables.items():
+            df = pd.DataFrame(table)
+            df.to_excel(writer, sheet_name=sheet_name, index=False, header=True)
 
 if __name__ == '__main__':
-    # if not argv[1]:
-    #     path = input('Input the path for your file:')
-    # else:
-    #     path = argv[1]
-    generate_sheets()
+    pdf2excel()
