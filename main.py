@@ -1,4 +1,4 @@
-API_KEY = "llx-p3W98EqNfdCJBe7eCC8jYpueztFTWGpiVmOzUbcgC8oiPqcE"
+API_KEY = "llx-..."
 
 from llama_cloud_services import LlamaParse
 from llama_index.core import SimpleDirectoryReader
@@ -22,8 +22,9 @@ def set_parser():
 
     parser = LlamaParse(
         api_key=API_KEY,
-        result_type="text",  
-        parsing_instruction=
+        premium_mode=True,
+        result_type="structured",  
+        content_guideline_instruction=
         """
         These are handwritten files.
         These files contain tables.
@@ -37,6 +38,7 @@ def set_parser():
         Save each table as a seperate JSON file unless two tables are in exact same format (same column titles and handwriting).
         Maintain actuall table format
         Save each json in a list
+        if a page has two tables with different formats, save them separately.
         """
     )
 
@@ -58,7 +60,7 @@ def parse_files(parser: LlamaParse, path: str):
 
     file_extractor = {".pdf": parser}
     table_list = SimpleDirectoryReader(
-    input_dir="./data", file_extractor=file_extractor).load_data()
+    input_dir="./tables", file_extractor=file_extractor).load_data()
 
     return table_list
 
