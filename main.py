@@ -1,4 +1,4 @@
-API_KEY = "llx-p3W98EqNfdCJBe7eCC8jYpueztFTWGpiVmOzUbcgC8oiPqcE"
+API_KEY = "llx-..."
 
 from llama_cloud_services import LlamaParse
 from llama_index.core import SimpleDirectoryReader
