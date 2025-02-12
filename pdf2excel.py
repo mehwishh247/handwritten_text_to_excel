@@ -6,8 +6,6 @@ import cv2
 import pytesseract
 import pandas as pd
 
-import numpy as np
-
 import os
 import time
 
@@ -90,7 +88,6 @@ def save_tables_to_excel(tables: int, output_file="data/tables.xlsx"):
         table_path = os.path.join('tables', f'table_{table + 1}.png')
         df = extract_table_from_image(table_path)
 
-        #out_path = os.path.join('data', f'table_{table + 1}')
         df.to_excel(writer, sheet_name=f'table_{table + 1}', index=False, header=False)
 
     writer.close()
